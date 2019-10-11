@@ -329,4 +329,27 @@ public class NeuralNet {
 	public int[] getLayers() {
 		return layerPlan.clone();
 	}
+	
+
+	public interface NodeRow {
+		public Double[] runActivationFunc(Double[] array);
+		
+		public Double[] runActivationFuncDerivative(Double[] array);
+	}
+	
+	public class ReLUNodeRow implements NodeRow {
+		
+		public ReLUNodeRow() {
+			
+		}
+		
+		public Double[] runActivationFunc(Double[] array) {
+			return null;
+		}
+		
+		public Double[] runActivationFuncDerivative(Double[] array) {
+			return null;
+		}
+	}
+	
 }
