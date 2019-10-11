@@ -3,9 +3,16 @@ import java.lang.reflect.Array;
 import java.lang.IllegalArgumentException;
 import java.lang.Integer;
 
-@SuppressWarnings("unchecked")  // Don't worry, it's safe (I think)
+/* A matrix class. Includes some matrix operations.
+ */
+
+@SuppressWarnings("unchecked")  // Don't worry, it's safe
+// This class stores the E objects in an Object array, so a lot of unchecked casting is done
 public class Matrix <E> implements Iterable<E> {
    /*
+   Matrix elements are store very similarly to an ArrayList
+   Matrix elements are held in one flattened array. See diagram below for how matrix elements are stored in array
+    
    Formatting of matrix:
    Array: 0 1 2 3 4 ...
    Matrix:
@@ -16,24 +23,31 @@ public class Matrix <E> implements Iterable<E> {
    
    Col and row numbers start at 0
    Indexes are given (row #, col #)
+   
+   // Command to convert from matrix indeces to array index
    Matrix[rowDex, colDex] = Array[rowDex + colDex * rows]
    */
 
+	// I don't recall why these are protected, I might've copied this part from ArrayList
    protected int rows;
    protected int cols;
-   protected Object[] data;
+   protected Object[] data;  // Holds elements in a single stretched out array
    
-   public <E> Matrix(int rows, int cols) {
+   
+   // Makes an empty matrix of the given size
+   public Matrix(int rows, int cols) {
       this(rows, cols, (E[]) new Object[rows * cols]);
    }
    
-   public <E> Matrix(Matrix<E> m) {
+   // Matrix clone constructor
+   public Matrix(Matrix<E> m) {
       data = m.data.clone();
       this.rows = m.rows;
       this.cols = m.cols;
    }
    
-   public <E> Matrix(int rows, int cols, E[] data) {
+   // Makes a matrix of the given size with data in the array format described above. Throws exception if array doesn't match given matrix size.
+   public Matrix(int rows, int cols, E[] data) {
       this.data = new Object[rows * cols];
       if (data.length != rows * cols) {
          throw new IllegalArgumentException();
@@ -59,10 +73,12 @@ public class Matrix <E> implements Iterable<E> {
       return data.clone();
    }
    
+   // Returns true if given cell is not null
    public boolean isFilled(int rowDex, int colDex) {
       return get(rowDex, colDex) != null;
    }
    
+   // Returns true if all cells aren't null
    public boolean isAllFilled() {
       boolean output = true;
       for (int i = 0; i < rows; i++) {
@@ -73,14 +89,17 @@ public class Matrix <E> implements Iterable<E> {
       return output;
    }
    
+   // Clones matrix
    public Matrix<E> clone() {
       return new Matrix<E>(rows, cols, (E[]) data.clone());
    }
    
+   // Clears matrix
    public void clear() {
       data = new Object[rows * cols];
    }
-         
+   
+   // Sets specified cell to given entry
    public void set (int rowDex, int colDex, E entry) {
       if (rowDex + colDex * rows >= rows * cols) {
          throw new IllegalArgumentException();
@@ -88,6 +107,7 @@ public class Matrix <E> implements Iterable<E> {
       data[rowDex + colDex * rows] = entry;
    }
    
+   // Returns element in given cell
    public E get (int rowDex, int colDex) {
       if (rowDex + colDex * rows >= rows * cols) {
          throw new IllegalArgumentException();
@@ -95,6 +115,7 @@ public class Matrix <E> implements Iterable<E> {
       return (E) data[rowDex + colDex * rows];
    }
    
+   // Converts matrix to string with two spaces between elements
    public String toString() {
       String output = "";
       for (int i = 0; i < rows; i++) {
@@ -111,8 +132,11 @@ public class Matrix <E> implements Iterable<E> {
       return output;
    }
    
+   // This returns a rotation matrix for 3d space. Multiplying vectors to these rotational matrices will rotate
+   // 	 the vectors around the given axis for the given angle.
+   //
    // These really shouldn't return Matrix<Integer> but instead double or long or something, but since I won't
-   //    be using angles other than 90 or -90, it shouldnt matter. TODO: Fix to be a functional matrix later.
+   //    be using angles other than 90 or -90, it shouldn't matter. TODO: Fix to be a functional matrix later.
    // Returns a rotational matrix to multiply vectors on, needs axis ('x', 'y', or 'z') and angle in degrees
    public static Matrix<Integer> rotationalMatrix(char axis, float angle) {
       if (axis != 'x' && axis != 'y' && axis != 'z') {
@@ -141,6 +165,7 @@ public class Matrix <E> implements Iterable<E> {
          double[] array = {Math.cos(Math.toRadians(angle)), -Math.sin(Math.toRadians(angle)), 0,
                            Math.sin(Math.toRadians(angle)), Math.cos(Math.toRadians(angle)), 0,
                            0, 0, 1};
+         
          Integer[] array2 = new Integer[9];
          for (int i = 0; i < 9; i++) {
             array2[i] = Integer.valueOf((int) Math.round(array[i]));
