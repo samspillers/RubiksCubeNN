@@ -51,4 +51,18 @@ public class Piece {
       }
       return output;
    }
+   
+   public boolean equals(Object other) {
+	   if (this == other) {
+		   return true;
+	   }
+	   if (other == null) {
+		   return false;
+	   }
+	   if (this.getClass() != other.getClass()) {
+		   return false;
+	   }
+	   Piece otherPiece = (Piece) other;
+	   return id == otherPiece.id && oriMatters == otherPiece.oriMatters && (!oriMatters || orientation.equals(otherPiece.orientation));
+   }
 }

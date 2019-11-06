@@ -20,7 +20,7 @@ public class Agent {
 	private static final double EPSILON_MAX = 0.9;
 	private static final double EPSILON_START = 0.01;
 	private static final double EPSILON_GROWTH_RATE = 0.005;  // Increase in epsilon / 100 iterations
-	private static final int REPLAYS_PER_100 = 45;
+	private static final int REPLAYS_PER_100 = 50;
 
 	public static void main(String[] args) {
 		InputStream stream = System.in;
@@ -71,7 +71,7 @@ public class Agent {
 				takeAction(chosenAction, cube);
 				Double[] currState = getState(cube);
 				int reward = calculateReward(cube);
-				int rewardDiff = reward - prevReward;
+//				int rewardDiff = reward - prevReward;
 				addReplay(replays, prevState.clone(), chosenAction, (double) reward, currState.clone());
 //				backPropFromStateAction(net, prevState, chosenAction, (double) reward, currState);
 				
@@ -174,9 +174,10 @@ public class Agent {
 		Double[] state1Out = net.runFunc(state1);
 		Double[] state2Out = net.runFunc(state2);
 		double actual = reward + GAMMA * state2Out[getMaxIndex(state2Out)];
-		System.out.println("funcOut: " + Arrays.toString(state1Out));
-		System.out.println("expected: " + state1Out[actionTaken] + ", actual: " + actual);
-		System.out.println("loss array: " + Arrays.toString(getLossArray(actionTaken, state1Out[actionTaken] - actual)));
+		
+//		System.out.println("funcOut: " + Arrays.toString(state1Out));
+//		System.out.println("expected: " + state1Out[actionTaken] + ", actual: " + actual);
+//		System.out.println("loss array: " + Arrays.toString(getLossArray(actionTaken, state1Out[actionTaken] - actual)));
 		
 		net.backProp(getLossArray(actionTaken, state1Out[actionTaken] - actual), state1, biasGrad, weightGrad);
 	}
@@ -294,7 +295,7 @@ public class Agent {
 
 	private static int calculateReward(RubiksCube cube) {
 		int rewardSum = 0;
-
+		
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				for (int k = 0; k < 3; k++) {
