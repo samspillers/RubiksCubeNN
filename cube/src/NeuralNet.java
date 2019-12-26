@@ -2,31 +2,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import nodeRow.*;
+
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 
 public class NeuralNet {
 	private ArrayList<Double[]> biasList;
 	private ArrayList<Matrix<Double>> weightList;
-	private int[] layerPlan;
+	private NodeRow[] layerPlan;
 	public static final double LEAKY_RELU_SLOPE = 0.01;  // Slope of the line to the left of x = 0
+	private static Random r = new Random();
 
 	// Give array of ints. Each entry is a layer, each int is the number of nodes in
 	// that lay. Include
 	// input and output layers
-	public NeuralNet(int[] layerPlan) {
+	public NeuralNet(NodeRow[] layerPlan) {
 		biasList = new ArrayList<Double[]>();
 		weightList = new ArrayList<Matrix<Double>>();
 		this.layerPlan = layerPlan;
 
 		for (int i = 1; i < layerPlan.length; i++) {
-			biasList.add(new Double[layerPlan[i]]);
-			weightList.add(new Matrix<Double>(layerPlan[i], layerPlan[i - 1]));
+			biasList.add(new Double[layerPlan[i].getSize()]);
+			weightList.add(new Matrix<Double>(layerPlan[i].getSize(), layerPlan[i - 1].getSize()));
 		}
 	}
 
@@ -40,8 +43,6 @@ public class NeuralNet {
 	}
 
 	public void initWeightRand(double minWeight, double maxWeight) {
-		Random r = new Random();
-
 		for (Matrix<Double> matrix : weightList) {
 			for (int i = 0; i < matrix.getRows(); i++) {
 				for (int j = 0; j < matrix.getCols(); j++) {
@@ -52,7 +53,6 @@ public class NeuralNet {
 	}
 
 	public void initBiasRand(double minBias, double maxBias) {
-		Random r = new Random();
 		for (Double[] array : biasList) {
 			for (int i = 0; i < array.length; i++) {
 				array[i] = r.nextDouble() * (maxBias - minBias) + minBias;
@@ -225,7 +225,7 @@ public class NeuralNet {
 
 	// Returns ReLU'(z(x)), given ReLU(z(x))
 	private Double derivativeReLU(Double activation) {
-		if (activation != 0.0) {
+		if (activation > 0.0) {
 			return 1.0;
 		} else {
 			return 0.0;
@@ -233,7 +233,7 @@ public class NeuralNet {
 	}
 	
 	private Double derivativeLeakyReLU(Double activation) {
-		if (activation != 0.0) {
+		if (activation >= 0.0) {
 			return 1.0;
 		} else {
 			return LEAKY_RELU_SLOPE;
@@ -302,10 +302,10 @@ public class NeuralNet {
 			}
 			
 			
-			int[] layerPlan = new int[layerCounter];
-			layerPlan[0] = weightList.get(0).getCols();
+			NodeRow[] layerPlan = new NodeRow[layerCounter];
+			layerPlan[0] = new ReLUNodeRow(weightList.get(0).getCols());
 			for (int i = 1; i < layerCounter; i++) {
-				layerPlan[i] =  weightList.get(i - 1).getRows();
+				layerPlan[i] =  new ReLUNodeRow(weightList.get(i - 1).getRows());
 			}
 			this.layerPlan = layerPlan;
 
@@ -326,30 +326,7 @@ public class NeuralNet {
 		}
 	}
 	
-	public int[] getLayers() {
+	public NodeRow[] getLayers() {
 		return layerPlan.clone();
 	}
-	
-
-	public interface NodeRow {
-		public Double[] runActivationFunc(Double[] array);
-		
-		public Double[] runActivationFuncDerivative(Double[] array);
-	}
-	
-	public class ReLUNodeRow implements NodeRow {
-		
-		public ReLUNodeRow() {
-			
-		}
-		
-		public Double[] runActivationFunc(Double[] array) {
-			return null;
-		}
-		
-		public Double[] runActivationFuncDerivative(Double[] array) {
-			return null;
-		}
-	}
-	
 }

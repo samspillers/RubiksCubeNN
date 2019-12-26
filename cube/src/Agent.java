@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
+
+import nodeRow.*;
+
 import java.text.SimpleDateFormat;  
 import java.util.Date;
 
@@ -15,7 +18,7 @@ public class Agent {
 	private static final int POSITION_REWARD = 30;
 	private static final int POS_AND_OR_REWARD = 100;
 	private static final int FULLY_SOLVED_REWARD = 1000;
-	private static final int[] NET_LAYOUT = { 832, 422, 100, 12 };
+	private static final NodeRow[] NET_LAYOUT = { new InputNodeRow(832), new ReLUNodeRow(422), new ReLUNodeRow(100), new ReLUNodeRow(12) };
 	private static final double GAMMA = 0.9;
 	private static final double EPSILON_MAX = 0.9;
 	private static final double EPSILON_START = 0.01;
@@ -107,7 +110,7 @@ public class Agent {
 	
 	@SuppressWarnings("unchecked")
 	private static void backPropFromReplay(NeuralNet net, List<Object[]> list, Random r, int numOfSamples) {
-		int[] layerPlan = net.getLayers();
+		NodeRow[] layerPlan = net.getLayers();
 		ArrayList<Double[]> inputBiases = getNewBiasList(layerPlan);
 		ArrayList<Matrix<Double>> inputWeights = getNewWeightList(layerPlan);
 		
@@ -122,7 +125,6 @@ public class Agent {
 		}
 		
 		// Averages all the collected gradients
-
 		for (int i = 0; i < inputWeights.size(); i++) {
 			for (int j = 0; j < inputWeights.get(i).getCols(); j++) {
 				for (int k = 0; k < inputWeights.get(i).getRows(); k++) {
@@ -139,17 +141,17 @@ public class Agent {
 	}
 	
 	private static void backPropFromStateAction(NeuralNet net, Double[] state1, int actionTaken, Double reward, Double[] state2) {
-		int[] layerPlan = net.getLayers();
+		NodeRow[] layerPlan = net.getLayers();
 		ArrayList<Double[]> inputBiases = getNewBiasList(layerPlan);
 		ArrayList<Matrix<Double>> inputWeights = getNewWeightList(layerPlan);
 		getGradient(net, state1, actionTaken, reward, state2, inputBiases, inputWeights);
 		net.addGrad(inputBiases, inputWeights);
 	}
 	
-	private static ArrayList<Double[]> getNewBiasList(int[] layerPlan) {
+	private static ArrayList<Double[]> getNewBiasList(NodeRow[] layerPlan) {
 		ArrayList<Double[]> biasList = new ArrayList<Double[]>();
 		for (int i = 1; i < layerPlan.length; i++) {
-			biasList.add(new Double[layerPlan[i]]);
+			biasList.add(new Double[layerPlan[i].getSize()]);
 			for (int j = 0; j < biasList.get(i - 1).length; j++) {
 				biasList.get(i - 1)[j]=0.0;
 			}
@@ -157,10 +159,10 @@ public class Agent {
 		return biasList;
 	}
 	
-	private static ArrayList<Matrix<Double>> getNewWeightList(int[] layerPlan) {
+	private static ArrayList<Matrix<Double>> getNewWeightList(NodeRow[] layerPlan) {
 		ArrayList<Matrix<Double>> weightList = new ArrayList<Matrix<Double>>();
 		for (int i = 1; i < layerPlan.length; i++) {
-			weightList.add(new Matrix<Double>(layerPlan[i], layerPlan[i - 1]));
+			weightList.add(new Matrix<Double>(layerPlan[i].getSize(), layerPlan[i - 1].getSize()));
 			for (int j = 0; j < weightList.get(i - 1).getCols(); j++) {
 				for (int k = 0; k < weightList.get(i - 1).getRows(); k++) {
 					weightList.get(i - 1).set(k, j, 0.0);
