@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public interface NueralNetInterface {
 	public void initWeightRand(double minWeight, double maxWeight);
@@ -8,6 +9,9 @@ public interface NueralNetInterface {
 	
 	public void initBiasZeros();
 	
+	public Double[] runFunc(Double[] input);
 	
+	public void backProp(Double[] lossArray, Double[] state, ArrayList<Double[]> biasGrad, ArrayList<Matrix<Double>> weightGrad);
 	
+	public void save(String fileName);
 }

@@ -176,6 +176,7 @@ public class NeuralNet {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private Double[] addArrays(Double[] array1, Double[] array2) {
 		if (array1.length != array2.length) {
 			throw new IllegalArgumentException();
