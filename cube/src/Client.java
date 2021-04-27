@@ -1,8 +1,36 @@
 import java.util.*;
 
+import nodeRow.InputNodeRow;
+import nodeRow.LeakyReLUNodeRow;
+import nodeRow.NodeRow;
+import nodeRow.ReLUNodeRow;
+
 public class Client {
    public static void main(String[] args) {
       
+	   Integer[] input2 = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+	   Matrix<Integer> m = new Matrix<Integer>(3, 3, input2);
+	   System.out.println(m);
+	   Integer[] col2 = m.getCol(2, Integer.class);
+	   System.out.println(Arrays.toString(col2));
+	   m.setRow(0, col2);
+	   System.out.println(m);
+	   m.setCol(1, m.getRow(2, Integer.class));
+	   System.out.println(m);
+	   
+	   /*
+	   NodeRow[] layerPlan = { new InputNodeRow(2), new LeakyReLUNodeRow(2, 0.1), new LeakyReLUNodeRow(2, 0.1) };
+	   
+	   NeuralNet n = new NeuralNet(layerPlan);
+	   n.initBiasRand(0, 1);
+	   n.initWeightRand(0, 1);
+	   
+	   Double[] input = {1.0, 1.0};
+	   Double[] loss = {0.5, 0.5};
+	   System.out.println(Arrays.toString(n.runFunc(input)));
+	   System.out.println(n);
+	   n.backProp(loss, input, getNewBiasList(layerPlan), getNewWeightList(layerPlan));
+	   */
       
 //      Double[] array4 = new Double[6];
 //      int[] array3 = new int[6];
@@ -56,6 +84,8 @@ public class Client {
 //      e[1] = 0;
 //      e[2] = 0;
 //      
+	   
+	   /*
       RubiksCube f = new RubiksCube(3);      
       
       Integer[] array = new Integer[9];
@@ -125,7 +155,31 @@ public class Client {
       Number[] j = c.multiplyVector(array2);
       System.out.println(Arrays.toString(j));
       Integer[] k = (Integer[]) c.multiplyVector(array2);
-      System.out.println(Arrays.toString(k));
+      System.out.println(Arrays.toString(k)); */
       
    }
+   
+	private static ArrayList<Double[]> getNewBiasList(NodeRow[] layerPlan) {
+		ArrayList<Double[]> biasList = new ArrayList<Double[]>();
+		for (int i = 1; i < layerPlan.length; i++) {
+			biasList.add(new Double[layerPlan[i].getSize()]);
+			for (int j = 0; j < biasList.get(i - 1).length; j++) {
+				biasList.get(i - 1)[j]=0.0;
+			}
+		}
+		return biasList;
+	}
+	
+	private static ArrayList<Matrix<Double>> getNewWeightList(NodeRow[] layerPlan) {
+		ArrayList<Matrix<Double>> weightList = new ArrayList<Matrix<Double>>();
+		for (int i = 1; i < layerPlan.length; i++) {
+			weightList.add(new Matrix<Double>(layerPlan[i].getSize(), layerPlan[i - 1].getSize()));
+			for (int j = 0; j < weightList.get(i - 1).getColSize(); j++) {
+				for (int k = 0; k < weightList.get(i - 1).getRowSize(); k++) {
+					weightList.get(i - 1).set(k, j, 0.0);
+				}
+			}
+		}
+		return weightList;
+	}
 }

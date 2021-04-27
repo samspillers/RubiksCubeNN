@@ -126,8 +126,8 @@ public class Agent {
 		
 		// Averages all the collected gradients
 		for (int i = 0; i < inputWeights.size(); i++) {
-			for (int j = 0; j < inputWeights.get(i).getCols(); j++) {
-				for (int k = 0; k < inputWeights.get(i).getRows(); k++) {
+			for (int j = 0; j < inputWeights.get(i).getColSize(); j++) {
+				for (int k = 0; k < inputWeights.get(i).getRowSize(); k++) {
 					inputWeights.get(i).set(k, j, inputWeights.get(i).get(k, j) / numOfSamples);
 				}
 			}
@@ -163,8 +163,8 @@ public class Agent {
 		ArrayList<Matrix<Double>> weightList = new ArrayList<Matrix<Double>>();
 		for (int i = 1; i < layerPlan.length; i++) {
 			weightList.add(new Matrix<Double>(layerPlan[i].getSize(), layerPlan[i - 1].getSize()));
-			for (int j = 0; j < weightList.get(i - 1).getCols(); j++) {
-				for (int k = 0; k < weightList.get(i - 1).getRows(); k++) {
+			for (int j = 0; j < weightList.get(i - 1).getColSize(); j++) {
+				for (int k = 0; k < weightList.get(i - 1).getRowSize(); k++) {
 					weightList.get(i - 1).set(k, j, 0.0);
 				}
 			}

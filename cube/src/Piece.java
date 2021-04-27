@@ -32,7 +32,7 @@ public class Piece {
             throw new IllegalArgumentException();
          }
          
-         orientation = integerToInt((Integer[]) Matrix.rotationalMatrix(axis, angle).multiplyVector(intToInteger(orientation)));
+         orientation = integerToInt((Integer[]) Matrix.rotationalMatrix(axis, angle).multVec(intToInteger(orientation)));
       }
    }
    
